@@ -7,13 +7,14 @@ import jakarta.persistence.*;
 import lombok.*;
 @Entity
 @Table(name = "time_analysis")
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TimeAnalysis {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long requestId;

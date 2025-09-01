@@ -4,17 +4,20 @@ import jakarta.persistence.*;
 import lombok.*;
 @Entity
 @Table(name = "category")
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Category {
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private Long subCategory;
+    private String categoryName;
+    private String subCategory;
     private String priority;
     private String mode;
     private Long groupId;
-    private String technitian;
+    private String technician;
 }
