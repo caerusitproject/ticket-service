@@ -7,10 +7,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "ticket_state")
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TicketState {
 	
@@ -18,7 +18,8 @@ public class TicketState {
     private Integer id;
 
     private String taskState;
-    private Instant taskUpdateOn = Instant.now();
+
+    private Instant taskUpdateOn;
     
     @PreUpdate
     public void onUpdate() {

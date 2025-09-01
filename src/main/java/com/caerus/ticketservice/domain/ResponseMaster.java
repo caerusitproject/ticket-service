@@ -8,16 +8,20 @@ import lombok.*;
 
 @Entity
 @Table(name = "response_master")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ResponseMaster {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "request_id")
-    private Long requestId;
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    private RequestMaster requestMaster;
 
     @Column(columnDefinition = "TEXT")
     private String message;
@@ -28,14 +32,21 @@ public class ResponseMaster {
     @Column(name = "created_by")
     private String createdBy;
 
-    @Column(name = "created_on")
-    private Instant createdOn = Instant.now();
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)
+    protected Instant createdAt;
 
-    @Column(name = "updated_on")
-    private Instant updatedOn = Instant.now();
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    protected Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
     
     @PreUpdate
     public void onUpdate() {
-		this.updatedOn = Instant.now();
+		this.updatedAt = Instant.now();
 	}
 }

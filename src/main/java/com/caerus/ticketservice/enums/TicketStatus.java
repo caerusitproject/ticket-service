@@ -1,4 +1,4 @@
-package com.caerus.ticketservice.domain;
+package com.caerus.ticketservice.enums;
 public enum TicketStatus {
     CREATED,
     ASSIGNED,

@@ -3,7 +3,8 @@ package com.caerus.ticketservice.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.caerus.ticketservice.configure.ModelMapperConfig;
+import com.caerus.ticketservice.dto.TicketDto;
 import org.springframework.stereotype.Service;
 
 import com.caerus.ticketservice.domain.Ticket;
@@ -13,9 +14,19 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TicketServiceImpl implements ITicketService {
-	@Autowired
+public class TicketServiceImpl implements TicketService {
+
 	private final TicketRepository ticketRepository;
+    private final ModelMapperConfig modelMapper;
+
+    @Override
+    public Long saveTicket(TicketDto ticketDto) {
+
+        Ticket ticket = modelMapper.getModelMapper().map(ticketDto, Ticket.class);
+
+        Ticket savedTicket = ticketRepository.save(ticket);
+        return savedTicket.getId();
+    }
 
 	@Override
 	public List<Ticket> findAll() {
@@ -36,10 +47,7 @@ public class TicketServiceImpl implements ITicketService {
 	}
 
 
-	@Override
-	public Ticket saveTicket(Ticket ticket) {
-		return ticketRepository.save(ticket);
-	}
+
 
 	@Override
 	public Ticket updateTicket(Ticket ticket) {
