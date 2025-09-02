@@ -12,10 +12,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DocumentInfo {
+public class DocumentInfo extends AuditableEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String docType;
     private String docSize;
@@ -25,25 +26,4 @@ public class DocumentInfo {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @ManyToOne
-    @JoinColumn(name = "request_id")
-    private RequestMaster request;
-
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", updatable = false)
-    protected Instant createdAt;
-
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
-    protected Instant updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        Instant now = Instant.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-    
-    @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = Instant.now();
-    }
 }
