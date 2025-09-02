@@ -21,6 +21,7 @@ public interface TicketMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Ticket toEntity(TicketDto ticketDto);
 
     @Mapping(target = "id", ignore = true)
@@ -35,8 +36,18 @@ public interface TicketMapper {
     @Mapping(target = "id", ignore = true)
     Category toEntity(CategoryDto categoryDto);
 
+    @Mapping(target = "deleted", ignore = true)
     void updateTicketFromDto(UpdateTicketRequestDto dto, @MappingTarget Ticket entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void patchTicketFromDto(UpdateTicketRequestDto dto, @MappingTarget Ticket entity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void patchCategoryFromDto(CategoryRequestDto dto, @MappingTarget Category entity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void patchTicketDetailFromDto(TicketDetailRequestDto dto, @MappingTarget TicketDetail entity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void patchDocumentInfoFromDto(DocumentInfoRequestDto dto, @MappingTarget DocumentInfo entity);
 }
