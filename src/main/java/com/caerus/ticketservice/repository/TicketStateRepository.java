@@ -5,4 +5,4 @@ import org.springframework.stereotype.Repository;
 
 import com.caerus.ticketservice.domain.TicketState;
 @Repository
-public interface TicketStateRepository extends JpaRepository<TicketState, Integer> {}
+public interface TicketStateRepository extends JpaRepository<TicketState, Long> {}

@@ -2,6 +2,7 @@ package com.caerus.ticketservice.domain;
 
 import java.time.Instant;
 
+import com.caerus.ticketservice.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,19 +13,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TicketState {
+public class TicketState extends AuditableEntity{
 	
 	@Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String taskState;
-
-    private Instant taskUpdateOn;
-    
-    @PreUpdate
-    public void onUpdate() {
-		this.taskUpdateOn = Instant.now();
-	}
+    @Enumerated(EnumType.STRING)
+    private TicketStatus ticketStatus;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")

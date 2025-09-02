@@ -1,19 +1,14 @@
-package com.caerus.ticketservice.domain;
+package com.caerus.ticketservice.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
-@Entity
-@Table(name = "category")
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Category extends AuditableEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CategoryDto {
     private Long id;
-
     private String categoryName;
     private String subCategory;
     private String priority;
