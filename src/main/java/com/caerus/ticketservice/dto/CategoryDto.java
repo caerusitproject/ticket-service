@@ -1,18 +1,11 @@
 package com.caerus.ticketservice.dto;
 
-import lombok.*;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class CategoryDto {
-    private Long id;
-    private String categoryName;
-    private String subCategory;
-    private String priority;
-    private String mode;
-    private Long groupId;
-    private String technician;
+public record CategoryDto
+        (Long id,
+         String categoryName,
+         String subCategory,
+         String priority,
+         String mode,
+         Long groupId,
+         String technician) {
 }

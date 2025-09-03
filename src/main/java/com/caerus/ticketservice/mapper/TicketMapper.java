@@ -6,7 +6,6 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper {
-
     TicketDto toDto(Ticket ticket);
 
     TicketStateDto toDto(TicketState state);
