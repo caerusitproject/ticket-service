@@ -58,6 +58,9 @@ public class Ticket extends AuditableEntity {
     @Column(name = "last_updated")
     private Instant lastUpdated;
 
+    @Column(name = "is_deleted")
+    private boolean deleted = false;
+
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketDetail> ticketDetails;
 

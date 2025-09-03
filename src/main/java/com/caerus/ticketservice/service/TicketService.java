@@ -1,10 +1,6 @@
 package com.caerus.ticketservice.service;
 
-import com.caerus.ticketservice.domain.Ticket;
-import com.caerus.ticketservice.dto.TicketDto;
-import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
-
-import java.util.List;
+import com.caerus.ticketservice.dto.*;
 
 public interface TicketService {
 
@@ -16,8 +12,6 @@ public interface TicketService {
 
     UpdateTicketRequestDto patchTicketById(Long id, UpdateTicketRequestDto updateTicketRequestDto);
 
-    List<Ticket> findAll();
-
-    void deleteById(Integer id);
+    void softDeleteById(Long id);
 
 }

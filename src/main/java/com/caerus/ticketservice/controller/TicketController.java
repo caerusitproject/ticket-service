@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import static com.caerus.ticketservice.constants.TicketMessages.TICKET_UPDATED_MSG;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tickets")
@@ -38,13 +40,20 @@ public class TicketController {
     public ResponseEntity<SuccessResponse<UpdateTicketRequestDto>> updateTicket(@PathVariable Long id, @Valid @RequestBody UpdateTicketRequestDto updateTicketRequestDto) {
         UpdateTicketRequestDto updatedTicket = ticketService.updateTicketById(id, updateTicketRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse<>("Ticket updated successfully", updatedTicket));
+                .body(new SuccessResponse<>(TICKET_UPDATED_MSG, updatedTicket));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<SuccessResponse<UpdateTicketRequestDto>> patchTicket(@PathVariable Long id, @RequestBody UpdateTicketRequestDto updateTicketRequestDto) {
         UpdateTicketRequestDto updatedTicket = ticketService.patchTicketById(id, updateTicketRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse<>("Ticket updated successfully", updatedTicket));
+                .body(new SuccessResponse<>(TICKET_UPDATED_MSG, updatedTicket));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteById(@PathVariable Long id) {
+        ticketService.softDeleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

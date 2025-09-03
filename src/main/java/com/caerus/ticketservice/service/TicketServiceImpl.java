@@ -4,6 +4,7 @@ import com.caerus.ticketservice.domain.Category;
 import com.caerus.ticketservice.domain.Ticket;
 import com.caerus.ticketservice.dto.TicketDto;
 import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
+import com.caerus.ticketservice.enums.ErrorCode;
 import com.caerus.ticketservice.exception.NotFoundException;
 import com.caerus.ticketservice.mapper.TicketMapper;
 import com.caerus.ticketservice.repository.CategoryRepository;
@@ -13,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +22,11 @@ public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
     private final TicketMapper ticketMapper;
+
+    private Ticket getTicketOrThrow(Long id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TICKET_NOT_FOUND.getMessage(id)));
+    }
 
     @Override
     @Transactional
@@ -55,16 +59,14 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional(readOnly = true)
     public TicketDto findTicketById(Long id) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket not found with id: " + id));
+        Ticket ticket = getTicketOrThrow(id);
 
         return ticketMapper.toDto(ticket);
     }
 
     @Override
     public UpdateTicketRequestDto updateTicketById(Long id, UpdateTicketRequestDto updateTicketRequestDto) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket not found with id: " + id));
+        Ticket ticket = getTicketOrThrow(id);
 
         ticketMapper.updateTicketFromDto(updateTicketRequestDto, ticket);
 
@@ -74,8 +76,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public UpdateTicketRequestDto patchTicketById(Long id, UpdateTicketRequestDto updateTicketRequestDto) {
-        Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket not found with id: " + id));
+        Ticket ticket = getTicketOrThrow(id);
 
         ticketMapper.updateTicketFromDto(updateTicketRequestDto, ticket);
 
@@ -84,14 +85,12 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<Ticket> findAll() {
-        return ticketRepository.findAll();
-    }
+    @Transactional
+    public void softDeleteById(Long id) {
+        Ticket ticket = getTicketOrThrow(id);
 
-    @Override
-    public void deleteById(Integer id) {
-        //ticketRepository.deleteById(id);
-
+        ticket.setDeleted(true);
+        ticketRepository.save(ticket);
     }
 
 }

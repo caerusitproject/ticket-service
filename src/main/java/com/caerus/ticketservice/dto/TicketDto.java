@@ -1,12 +1,11 @@
 package com.caerus.ticketservice.dto;
 
-import java.time.Instant;
-import java.util.List;
-
 import com.caerus.ticketservice.enums.TicketPriority;
 import com.caerus.ticketservice.enums.TicketStatus;
 import lombok.*;
 
+import java.time.Instant;
+import java.util.List;
 
 
 @Setter
@@ -29,6 +28,7 @@ public class TicketDto {
     private Instant startDate;
     private Instant dueDate;
     private Instant lastUpdated;
+    private boolean deleted;
     private List<TicketDetailDto> ticketDetails;
     private List<DocumentInfoDto> documents;
     private List<TicketStateDto> states;
