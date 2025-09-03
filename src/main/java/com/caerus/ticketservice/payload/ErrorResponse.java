@@ -11,13 +11,12 @@ public class ErrorResponse {
     private boolean status = false;
     private String error;
     private String message;
-    private String path;
     private String correlationId;
 
-    public ErrorResponse(String error, String message, String path, String correlationId) {
+    public ErrorResponse(String error, String message, String correlationId) {
         this.timestamp = Instant.now();
         this.error = error;
         this.message = message;
-        this.path = path;
         this.correlationId = correlationId;
-    }}
+    }
+}

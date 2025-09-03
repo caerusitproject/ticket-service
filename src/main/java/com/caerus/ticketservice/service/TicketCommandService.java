@@ -2,11 +2,9 @@ package com.caerus.ticketservice.service;
 
 import com.caerus.ticketservice.dto.*;
 
-public interface TicketService {
+public interface TicketCommandService {
 
     Long saveTicket(TicketDto ticketDto);
-
-    TicketDto findTicketById(Long id);
 
     UpdateTicketRequestDto updateTicketById(Long id, UpdateTicketRequestDto updateTicketRequestDto);
 

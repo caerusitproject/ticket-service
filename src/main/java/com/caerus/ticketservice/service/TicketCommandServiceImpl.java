@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TicketServiceImpl implements TicketService {
+public class TicketCommandServiceImpl implements TicketCommandService {
 
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
@@ -54,14 +54,6 @@ public class TicketServiceImpl implements TicketService {
         Ticket savedTicket = ticketRepository.save(ticket);
 
         return savedTicket.getId();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public TicketDto findTicketById(Long id) {
-        Ticket ticket = getTicketOrThrow(id);
-
-        return ticketMapper.toDto(ticket);
     }
 
     @Override
