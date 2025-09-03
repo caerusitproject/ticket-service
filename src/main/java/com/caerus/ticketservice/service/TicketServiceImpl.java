@@ -1,16 +1,13 @@
 package com.caerus.ticketservice.service;
 
 import com.caerus.ticketservice.domain.Category;
-import com.caerus.ticketservice.domain.DocumentInfo;
 import com.caerus.ticketservice.domain.Ticket;
-import com.caerus.ticketservice.domain.TicketDetail;
-import com.caerus.ticketservice.dto.*;
+import com.caerus.ticketservice.dto.TicketDto;
+import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
 import com.caerus.ticketservice.enums.ErrorCode;
 import com.caerus.ticketservice.exception.NotFoundException;
 import com.caerus.ticketservice.mapper.TicketMapper;
 import com.caerus.ticketservice.repository.CategoryRepository;
-import com.caerus.ticketservice.repository.DocumentInfoRepository;
-import com.caerus.ticketservice.repository.TicketDetailRepository;
 import com.caerus.ticketservice.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +21,6 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
-    private final TicketDetailRepository ticketDetailRepository;
-    private final DocumentInfoRepository documentInfoRepository;
     private final TicketMapper ticketMapper;
 
     private Ticket getTicketOrThrow(Long id) {
@@ -96,33 +91,6 @@ public class TicketServiceImpl implements TicketService {
 
         ticket.setDeleted(true);
         ticketRepository.save(ticket);
-    }
-
-    @Override
-    public CategoryDto patchCategoryById(Long id, CategoryRequestDto categoryRequestDto) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND.getMessage(id)));
-
-        ticketMapper.patchCategoryFromDto(categoryRequestDto, category);
-        return ticketMapper.toDto(categoryRepository.save(category));
-    }
-
-    @Override
-    public TicketDetailDto updateTicketDetails(Long id, TicketDetailRequestDto ticketDetailRequestDto) {
-        TicketDetail ticketDetail = ticketDetailRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket detail not found with id: " + id));
-
-        ticketMapper.patchTicketDetailFromDto(ticketDetailRequestDto, ticketDetail);
-        return ticketMapper.toDto(ticketDetailRepository.save(ticketDetail));
-    }
-
-    @Override
-    public DocumentInfoDto patchDocumentById(Long id, DocumentInfoRequestDto documentRequestDto) {
-        DocumentInfo documentInfo = documentInfoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Document not found with id: " + id));
-
-        ticketMapper.patchDocumentInfoFromDto(documentRequestDto, documentInfo);
-        return ticketMapper.toDto(documentInfoRepository.save(documentInfo));
     }
 
 }

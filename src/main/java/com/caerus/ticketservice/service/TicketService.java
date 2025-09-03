@@ -14,10 +14,4 @@ public interface TicketService {
 
     void softDeleteById(Long id);
 
-    CategoryDto patchCategoryById(Long id, CategoryRequestDto categoryRequestDto);
-
-    TicketDetailDto updateTicketDetails(Long id, TicketDetailRequestDto ticketDetailRequestDto);
-
-    DocumentInfoDto patchDocumentById(Long id, DocumentInfoRequestDto documentRequestDto);
-
 }
