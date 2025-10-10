@@ -1,16 +1,14 @@
+server:
+  port: 8082
+
 spring:
   application:
-    name: TicketService
+    name: ticket-service
   datasource:
-    #    url: jdbc:postgresql://localhost:5432/ticket_service
-    #    username: postgres
-    #    password: "Welcome@1234"
-    #    driver-class-name: org.postgresql.Driver
-    
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/ticket_service
+    username: postgres
+    password: Welcome@1234
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,12 +19,16 @@ spring:
     mapper:
       accept-case-insensitive-enums: true
 
-server:
-  port: 8082
-  #eureka:
-  #  client:
-  #    service-url:
-  #        defaultZone: http://localhost:8761/eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+file:
+  upload-dir: ./uploads
+  max-size: 50MB
+  allowed-types: "*"
+  public-url-prefix: /api/v1/files
 
   #camel:
   #  springboot:

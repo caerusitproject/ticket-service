@@ -47,6 +47,12 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorResponse> handleAllException(Exception exception, HttpServletRequest request) {
+        log.error("Unexpected exception: {}", exception.getMessage());
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public final ResponseEntity<ErrorResponse> badRequestException(Exception exception, HttpServletRequest request) {
         log.error("BadRequestException: {}", exception.getMessage());
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request);
     }

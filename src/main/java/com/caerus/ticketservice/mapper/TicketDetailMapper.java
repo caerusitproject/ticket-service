@@ -10,10 +10,6 @@ public interface TicketDetailMapper {
 
     TicketDetailDto toDto(TicketDetail ticketDetail);
 
-    @Mapping(target = "id", ignore = true)
-    TicketDetail toEntity(TicketDetailDto ticketDetailDto);
-
-
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void patchTicketDetailFromDto(TicketDetailRequestDto dto, @MappingTarget TicketDetail entity);
 

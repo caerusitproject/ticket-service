@@ -3,6 +3,7 @@
 **/META-INF/
 !.mvn/wrapper/maven-wrapper.jar
 /logs/
+/uploads/
 
 ### STS ###
 .apt_generated

@@ -7,4 +7,5 @@ public interface TicketDetailService {
 
     TicketDetailDto updateTicketDetails(Long id, TicketDetailRequestDto ticketDetailRequestDto);
 
+    void saveTicketDetail(Long ticketId, String content);
 }
