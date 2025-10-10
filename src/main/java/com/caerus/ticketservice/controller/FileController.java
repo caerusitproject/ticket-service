@@ -47,14 +47,13 @@ public class FileController {
         if (contentType == null) {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
-        
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic())
                 .body(file);
     }
-
 
     @PostMapping("/tickets/editor-image")
     public ResponseEntity<Map<String, Object>> uploadEditorImage(@RequestParam("upload") MultipartFile image) {
@@ -66,4 +65,15 @@ public class FileController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/tickets/{ticketId}/editor/{fileName:.+}")
+    public ResponseEntity<Void> deleteTicketDocument(
+            @PathVariable Long ticketId,
+            @PathVariable String fileName) {
+
+        String relativePath = "tickets/" + ticketId + "/editor/" + fileName;
+        fileStorageService.deleteFile(relativePath);
+        return ResponseEntity.noContent().build();
+    }
+
 }
