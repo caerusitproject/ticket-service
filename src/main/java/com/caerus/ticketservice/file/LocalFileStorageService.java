@@ -83,12 +83,26 @@ public class LocalFileStorageService implements FileStorageService {
         }
     }
 
-//    public void deleteFile(String relativePath) {
-//        try {
-//            Files.deleteIfExists(Paths.get(fileStorageProperties.getUploadDir()).resolve(relativePath).normalize());
-//        } catch (IOException e) {
-//            log.warn("Failed to delete file {}", relativePath, e);
-//        }
-//    }
+    @Override
+    public void deleteFile(String relativePath) {
+        try {
+            Path filePath = rootLocation.resolve(relativePath).normalize();
+            if (!filePath.startsWith(rootLocation)) {
+                throw new SecurityException("Attempt to delete file outside of upload directory");
+            }
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                log.info("Deleted file successfully: {}", filePath);
+            } else {
+                log.warn("File not found for deletion: {}", filePath);
+            }
 
+        } catch (SecurityException e) {
+            log.error("Unauthorized file deletion attempt: {}", relativePath, e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Failed to delete file: {}", relativePath, e);
+            throw new RuntimeException("Failed to delete file: " + relativePath, e);
+        }
+    }
 }

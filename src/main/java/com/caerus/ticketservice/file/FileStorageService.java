@@ -9,4 +9,6 @@ public interface FileStorageService {
     Resource loadFile(String relativePath);
 
     void moveTempFilesToTicketFolder(Long ticketId);
+
+    void deleteFile(String relativePath);
 }
