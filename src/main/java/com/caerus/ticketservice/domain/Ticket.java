@@ -24,26 +24,27 @@ public class Ticket extends AuditableEntity {
     @Column(name = "ticket_id")
     private Long id;
 
-    private String item;
-    private String impact;
-    private String notifyType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TicketPriority priority = TicketPriority.LOW;
 
-
-    @Column(name = "assets_id")
-    private Long assetsId;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
+    private String category;
+    private String subCategory;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status = TicketStatus.CREATED;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TicketPriority priority = TicketPriority.LOW;
+    private String item;
+    private String notificationMode;
+    private String impact;
+    private String groupName;
+    private String site;
+    private String technician;
+    private String subject;
+
+    @Column(name = "assets_id")
+    private Long assetsId;
 
     private String assigneeUserId;
 
@@ -61,14 +62,12 @@ public class Ticket extends AuditableEntity {
     @Column(name = "is_deleted")
     private boolean deleted = false;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketDetail> ticketDetails;
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private TicketDetail ticketDetail;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DocumentInfo> documents;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TicketState> states;
 
     @PrePersist
     protected void onCreateTicket() {

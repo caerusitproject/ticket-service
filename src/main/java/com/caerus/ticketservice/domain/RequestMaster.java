@@ -1,12 +1,11 @@
 package com.caerus.ticketservice.domain;
 
-import java.time.Instant;
-import java.util.List;
-
 import com.caerus.ticketservice.enums.ResolutionType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.mapping.ToOne;
+
+import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "request_master")
@@ -20,7 +19,7 @@ public class RequestMaster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String requestor;
+    private String requester;
 
     @Column(columnDefinition = "TEXT")
     private String assets;
@@ -59,7 +58,7 @@ public class RequestMaster {
         this.createdAt = now;
         this.updatedAt = now;
     }
-    
+
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = Instant.now();

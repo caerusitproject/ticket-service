@@ -1,13 +1,13 @@
 package com.caerus.ticketservice.service;
 
-import com.caerus.ticketservice.domain.Category;
 import com.caerus.ticketservice.domain.Ticket;
+import com.caerus.ticketservice.domain.TicketDetail;
 import com.caerus.ticketservice.dto.TicketDto;
 import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
 import com.caerus.ticketservice.enums.ErrorCode;
 import com.caerus.ticketservice.exception.NotFoundException;
+import com.caerus.ticketservice.file.FileStorageService;
 import com.caerus.ticketservice.mapper.TicketMapper;
-import com.caerus.ticketservice.repository.CategoryRepository;
 import com.caerus.ticketservice.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TicketCommandServiceImpl implements TicketCommandService {
 
     private final TicketRepository ticketRepository;
-    private final CategoryRepository categoryRepository;
+    private final FileStorageService fileStorageService;
     private final TicketMapper ticketMapper;
 
     private Ticket getTicketOrThrow(Long id) {
@@ -34,24 +34,21 @@ public class TicketCommandServiceImpl implements TicketCommandService {
 
         Ticket ticket = ticketMapper.toEntity(ticketDto);
 
-        if (ticket.getCategory() != null && ticket.getCategory().getId() == null) {
-            Category savedCategory = categoryRepository.save(ticket.getCategory());
-            ticket.setCategory(savedCategory);
+        if (ticketDto.ticketDetail() != null && ticketDto.ticketDetail().content() != null) {
+            TicketDetail detail = TicketDetail.builder()
+                    .content(ticketDto.ticketDetail().content())
+                    .ticket(ticket)
+                    .build();
+            ticket.setTicketDetail(detail);
         }
 
-        if (ticket.getTicketDetails() != null) {
-            ticket.getTicketDetails().forEach(detail -> detail.setTicket(ticket));
-        }
 
         if (ticket.getDocuments() != null) {
             ticket.getDocuments().forEach(doc -> doc.setTicket(ticket));
         }
 
-        if (ticket.getStates() != null) {
-            ticket.getStates().forEach(state -> state.setTicket(ticket));
-        }
-
-        Ticket savedTicket = ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
+        fileStorageService.moveTempFilesToTicketFolder(savedTicket.getId());
 
         return savedTicket.getId();
     }

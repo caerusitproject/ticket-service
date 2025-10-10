@@ -6,6 +6,8 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface TicketMapper {
+
+    @Mapping(source = "ticketDetail", target = "ticketDetail")
     TicketDto toDto(Ticket ticket);
 
     TicketStateDto toDto(TicketState state);
@@ -15,10 +17,8 @@ public interface TicketMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "ticketDetail", ignore = true)
     Ticket toEntity(TicketDto ticketDto);
-
-    @Mapping(target = "id", ignore = true)
-    TicketState toEntity(TicketStateDto stateDto);
 
     @Mapping(target = "id", ignore = true)
     Category toEntity(CategoryDto categoryDto);

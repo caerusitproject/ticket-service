@@ -34,7 +34,7 @@
         <appender-ref ref="ASYNC_FILE"/>
     </root>
 
-    <logger name="com.caerus.userservice" level="DEBUG"/>
+    <logger name="com.caerus.ticketservice" level="DEBUG"/>
     <logger name="org.springframework.security" level="WARN"/>
     <logger name="org.springframework.web" level="INFO"/>
     <logger name="org.hibernate.SQL" level="DEBUG"/>

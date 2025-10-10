@@ -13,7 +13,7 @@ import static com.caerus.ticketservice.constants.TicketMessages.TICKET_UPDATED_M
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/ticketDetails")
+@RequestMapping("/api/v1/ticketDetail")
 public class TicketDetailController {
 
     private final TicketDetailService ticketService;

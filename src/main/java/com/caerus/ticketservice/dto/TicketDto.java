@@ -7,13 +7,17 @@ import java.time.Instant;
 import java.util.List;
 
 public record TicketDto(
-
         Long id,
         String item,
         String impact,
-        String notifyType,
+        String notificationMode,
+        String groupName,
+        String site,
+        String technician,
+        String subject,
         Long assetsId,
-        CategoryDto category,
+        String category,
+        String subCategory,
         TicketStatus status,
         TicketPriority priority,
         String assigneeUserId,
@@ -22,9 +26,8 @@ public record TicketDto(
         Instant dueDate,
         Instant lastUpdated,
         boolean deleted,
-        List<TicketDetailDto> ticketDetails,
+        TicketDetailRequestDto ticketDetail,
         List<DocumentInfoDto> documents,
-        List<TicketStateDto> states,
         Instant createdAt,
         Instant updatedAt
 
