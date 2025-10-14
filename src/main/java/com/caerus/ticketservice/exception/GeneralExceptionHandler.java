@@ -86,9 +86,22 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 status.getReasonPhrase(),
                 ex.getMessage(),
-                correlationId
+                correlationId,
+                status.value()
         );
         return new ResponseEntity<>(errorResponse, status);
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+        String correlationId = MDC.get(CORRELATION_ID);
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getStatus().getReasonPhrase(),
+                ex.getMessage(),
+                correlationId,
+                ex.getStatus().value()
+        );
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -103,7 +116,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 message,
-                MDC.get(CORRELATION_ID)
+                MDC.get(CORRELATION_ID),
+                HttpStatus.BAD_REQUEST.value()
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

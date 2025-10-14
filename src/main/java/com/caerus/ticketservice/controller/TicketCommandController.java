@@ -1,6 +1,6 @@
 package com.caerus.ticketservice.controller;
 
-import com.caerus.ticketservice.dto.TicketDto;
+import com.caerus.ticketservice.dto.TicketRequestDto;
 import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
 import com.caerus.ticketservice.payload.SuccessResponse;
 import com.caerus.ticketservice.service.TicketCommandService;
@@ -23,7 +23,7 @@ public class TicketCommandController {
     private final TicketCommandService ticketCommandService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<Map<String, Long>>> createTicket(@Valid @RequestBody TicketDto ticketDto) {
+    public ResponseEntity<SuccessResponse<Map<String, Long>>> createTicket(@Valid @RequestBody TicketRequestDto ticketDto) {
         Long id = ticketCommandService.saveTicket(ticketDto);
         Map<String, Long> data = Map.of("id", id);
         return ResponseEntity.status(HttpStatus.CREATED)

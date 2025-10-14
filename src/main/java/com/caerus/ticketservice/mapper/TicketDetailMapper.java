@@ -2,8 +2,10 @@ package com.caerus.ticketservice.mapper;
 
 import com.caerus.ticketservice.domain.TicketDetail;
 import com.caerus.ticketservice.dto.TicketDetailDto;
-import com.caerus.ticketservice.dto.TicketDetailRequestDto;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface TicketDetailMapper {
@@ -11,6 +13,6 @@ public interface TicketDetailMapper {
     TicketDetailDto toDto(TicketDetail ticketDetail);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void patchTicketDetailFromDto(TicketDetailRequestDto dto, @MappingTarget TicketDetail entity);
+    void patchTicketDetailFromDto(TicketDetailDto dto, @MappingTarget TicketDetail entity);
 
 }

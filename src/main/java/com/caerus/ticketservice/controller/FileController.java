@@ -1,5 +1,7 @@
 package com.caerus.ticketservice.controller;
 
+import com.caerus.ticketservice.dto.ApiResponse;
+import com.caerus.ticketservice.dto.FileUploadResponse;
 import com.caerus.ticketservice.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -23,12 +25,22 @@ import java.util.concurrent.TimeUnit;
 public class FileController {
     private final FileStorageService fileStorageService;
 
-    @PostMapping("/tickets/documents")
-    public ResponseEntity<String> uploadTicketDocument(
-            @RequestParam("file") MultipartFile file) {
+    @PostMapping("/temp/drafts/{contextId}")
+    public ResponseEntity<ApiResponse<List<FileUploadResponse>>> uploadTicketDocument(
+            @PathVariable String contextId,
+            @RequestParam("files") List<MultipartFile> files) {
 
-        String fileUrl = fileStorageService.storeFile(file, "temp/documents");
-        return ResponseEntity.ok(fileUrl);
+        if (files.isEmpty() || contextId.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.failure("Invalid request"));
+        }
+
+        List<FileUploadResponse> uploadedFiles = files.stream()
+                .map(file -> new FileUploadResponse(
+                        fileStorageService.storeFile(file, "temp/drafts/" + contextId),
+                        file.getSize()))
+                .toList();
+
+        return ResponseEntity.ok(ApiResponse.success("Files uploaded successfully", uploadedFiles));
     }
 
     @GetMapping("/tickets/{ticketId}/documents/{fileName:.+}")
@@ -55,23 +67,22 @@ public class FileController {
                 .body(file);
     }
 
-    @PostMapping("/tickets/editor-image")
-    public ResponseEntity<Map<String, Object>> uploadEditorImage(@RequestParam("upload") MultipartFile image) {
-        String fileUrl = fileStorageService.storeFile(image, "temp/editor");
+    @DeleteMapping("/temp/drafts/{contextId}/{fileName:.+}")
+    public ResponseEntity<Void> deleteDraftFile(
+            @PathVariable String contextId,
+            @PathVariable String fileName) {
 
-        Map<String, Object> response = Map.of(
-                "uploaded", true,
-                "url", fileUrl
-        );
-        return ResponseEntity.ok(response);
+        String relativePath = "temp/drafts/" + contextId + "/" + fileName;
+        fileStorageService.deleteFile(relativePath);
+        return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/tickets/{ticketId}/editor/{fileName:.+}")
-    public ResponseEntity<Void> deleteTicketDocument(
+    @DeleteMapping("/tickets/{ticketId}/{fileName:.+}")
+    public ResponseEntity<Void> deleteTicketFile(
             @PathVariable Long ticketId,
             @PathVariable String fileName) {
 
-        String relativePath = "tickets/" + ticketId + "/editor/" + fileName;
+        String relativePath = "tickets/" + ticketId + "/" + fileName;
         fileStorageService.deleteFile(relativePath);
         return ResponseEntity.noContent().build();
     }

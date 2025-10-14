@@ -1,5 +1,6 @@
 package com.caerus.ticketservice.file;
 
+import com.caerus.ticketservice.exception.file.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -9,77 +10,116 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class LocalFileStorageService implements FileStorageService {
 
     private final Path rootLocation;
+    private static final long MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; //50 MB
 
     public LocalFileStorageService(@Value("${file.upload-dir:uploads}") String uploadDir) {
-        this.rootLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+        this.rootLocation = Path.of(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(rootLocation);
+            log.info("Initialized file storage at: {}", rootLocation);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize upload directory", e);
+            log.error("Could not initialize upload directory", e);
+            throw new FileInitializationException("Could not initialize upload directory", e);
         }
     }
 
     @Override
     public String storeFile(MultipartFile file, String relativePath) {
         try {
+            if (file.isEmpty()) {
+                throw new EmptyFileUploadException("Failed to store empty file");
+            }
+
+            if (file.getSize() > MAX_FILE_SIZE_BYTES) {
+                throw new FileSizeExceededException("File size exceeds the maximum allowed size");
+            }
             Path destinationDir = rootLocation.resolve(relativePath).normalize();
             Files.createDirectories(destinationDir);
 
-            String extension = "";
-            String originalName = file.getOriginalFilename();
-            if (originalName != null && originalName.contains(".")) {
-                extension = originalName.substring(originalName.lastIndexOf("."));
-            }
-
-            String uniqueFileName = UUID.randomUUID() + extension;
+            String uniqueFileName = generateUniqueFileName(file.getOriginalFilename());
             Path targetPath = destinationDir.resolve(uniqueFileName);
 
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
             log.info("Stored file: {}", targetPath);
 
             return "/uploads/" + relativePath + "/" + uniqueFileName;
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to store file", ex);
+            throw new FileStorageException("Failed to store file", ex);
         }
+    }
+
+    private String generateUniqueFileName(String originalFilename) {
+        String extension = Optional.ofNullable(originalFilename)
+                .filter(name -> name.contains("."))
+                .map(name -> name.substring(name.lastIndexOf(".")))
+                .orElse("");
+        return UUID.randomUUID() + extension;
+    }
+
+    public Path getRootLocation() {
+        return rootLocation;
     }
 
     @Override
     public Resource loadFile(String relativePath) {
-        Path filePath = rootLocation.resolve(relativePath).normalize();
-        return new FileSystemResource(filePath);
+        try {
+            Path filePath = rootLocation.resolve(relativePath).normalize();
+            if (!Files.exists(filePath) || !Files.isReadable(filePath)) {
+                throw new FileNotFoundException("File not found: " + relativePath);
+            }
+            return new FileSystemResource(filePath);
+        } catch (InvalidPathException e) {
+            throw new FileSecurityException("Invalid file path: " + relativePath + " : " + e);
+        }
     }
 
     @Override
-    public void moveTempFilesToTicketFolder(Long ticketId) {
-        Path tempDir = rootLocation.resolve("temp");
-        Path targetDir = rootLocation.resolve("tickets/" + ticketId);
+    public void moveTempFilesToTicketFolder(Long ticketId, List<String> fileUrls) {
+        if (fileUrls == null || fileUrls.isEmpty()) {
+            log.info("No temp files to move for ticket {}", ticketId);
+            return;
+        }
+        Path ticketDir = rootLocation.resolve("tickets").resolve(ticketId.toString());
 
-        try (Stream<Path> files = Files.walk(tempDir)) {
-            files.filter(Files::isRegularFile).forEach(file -> {
-                try {
-                    Path relative = tempDir.relativize(file);
-                    Path destination = targetDir.resolve(relative);
-                    Files.createDirectories(destination.getParent());
-                    Files.move(file, destination, StandardCopyOption.REPLACE_EXISTING);
-                    log.info("Moved {} → {}", file, destination);
-                } catch (IOException e) {
-                    log.error("Failed to move file {}", file, e);
-                }
-            });
+        try {
+            Files.createDirectories(ticketDir);
         } catch (IOException e) {
-            log.warn("No temp files found to move for ticket {}", ticketId);
+            throw new FileMoveException("Failed to create ticket directory for ticket " + ticketId, e);
+        }
+
+        for (String fileUrl : fileUrls) {
+            try {
+                String relativePath = fileUrl
+                        .replaceFirst("^/uploads/", "");
+
+                Path sourcePath = rootLocation.resolve(relativePath).normalize();
+
+                if (!Files.exists(sourcePath)) {
+                    log.warn("Source file not found: {}", sourcePath);
+                    continue;
+                }
+
+                Path destinationPath = ticketDir.resolve(sourcePath.getFileName());
+                
+                Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                log.info("Moved {} → {}", sourcePath, destinationPath);
+
+            } catch (Exception e) {
+                log.error("Failed to move file from URL: {}", fileUrl, e);
+                throw new FileMoveException("Failed to move file from URL: " + fileUrl, e);
+            }
         }
     }
 
@@ -88,21 +128,20 @@ public class LocalFileStorageService implements FileStorageService {
         try {
             Path filePath = rootLocation.resolve(relativePath).normalize();
             if (!filePath.startsWith(rootLocation)) {
-                throw new SecurityException("Attempt to delete file outside of upload directory");
+                log.error("Unauthorized file deletion attempt: {}", relativePath);
+                throw new FileSecurityException("Attempt to delete file outside of upload directory");
             }
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
                 log.info("Deleted file successfully: {}", filePath);
             } else {
                 log.warn("File not found for deletion: {}", filePath);
+                throw new FileNotFoundException("File not found: " + relativePath);
             }
 
-        } catch (SecurityException e) {
-            log.error("Unauthorized file deletion attempt: {}", relativePath, e);
-            throw e;
         } catch (IOException e) {
             log.error("Failed to delete file: {}", relativePath, e);
-            throw new RuntimeException("Failed to delete file: " + relativePath, e);
+            throw new FileDeletionException("Failed to delete file: " + relativePath, e);
         }
     }
 }

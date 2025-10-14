@@ -4,21 +4,21 @@ import com.caerus.ticketservice.domain.*;
 import com.caerus.ticketservice.dto.*;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {DocumentInfoMapper.class, TicketDetailMapper.class})
 public interface TicketMapper {
 
     @Mapping(source = "ticketDetail", target = "ticketDetail")
+    @Mapping(source = "documents", target = "documents")
     TicketDto toDto(Ticket ticket);
 
     TicketStateDto toDto(TicketState state);
 
     UpdateTicketRequestDto toUpdateDto(Ticket ticket);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "ticketDetail", ignore = true)
-    Ticket toEntity(TicketDto ticketDto);
+    Ticket toEntity(TicketRequestDto ticketDto);
 
     @Mapping(target = "id", ignore = true)
     Category toEntity(CategoryDto categoryDto);
