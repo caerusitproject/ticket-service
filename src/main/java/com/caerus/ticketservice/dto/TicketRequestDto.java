@@ -6,8 +6,7 @@ import com.caerus.ticketservice.enums.TicketStatus;
 import java.time.Instant;
 import java.util.List;
 
-public record TicketDto(
-        Long id,
+public record TicketRequestDto(
         String item,
         String impact,
         String notificationMode,
@@ -26,8 +25,8 @@ public record TicketDto(
         Instant dueDate,
         Instant lastUpdated,
         boolean deleted,
-        TicketDetailDto ticketDetail,
-        List<DocumentInfoDto> documents,
+        TicketDetailRequestDto ticketDetail,
+        List<DocumentInfoRequestDto> documents,
         Instant createdAt,
         Instant updatedAt
 

@@ -6,16 +6,25 @@ import com.caerus.ticketservice.enums.TicketStatus;
 import java.time.Instant;
 
 public record UpdateTicketRequestDto(
-        Long id,
         String item,
         String impact,
-        String notifyType,
+        String notificationMode,
+        String groupName,
+        String site,
+        String technician,
+        String subject,
         Long assetsId,
+        String category,
+        String subCategory,
         TicketStatus status,
         TicketPriority priority,
         String assigneeUserId,
         String createdBy,
         Instant startDate,
         Instant dueDate,
-        Instant lastUpdated) {
+        Instant lastUpdated,
+        boolean deleted,
+        Instant createdAt,
+        Instant updatedAt,
+        TicketDetailDto ticketDetail) {
 }
