@@ -42,6 +42,8 @@ public class Ticket extends AuditableEntity {
     private String site;
     private String technician;
     private String subject;
+    private String requester;
+    List<String> userEmailIdToNotify;
 
     @Column(name = "assets_id")
     private Long assetsId;

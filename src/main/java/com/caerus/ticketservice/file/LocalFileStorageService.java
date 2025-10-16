@@ -13,9 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -86,10 +84,10 @@ public class LocalFileStorageService implements FileStorageService {
     }
 
     @Override
-    public void moveTempFilesToTicketFolder(Long ticketId, List<String> fileUrls) {
+    public Map<String, String> moveTempFilesToTicketFolder(Long ticketId, List<String> fileUrls) {
         if (fileUrls == null || fileUrls.isEmpty()) {
             log.info("No temp files to move for ticket {}", ticketId);
-            return;
+            return Map.of();
         }
         Path ticketDir = rootLocation.resolve("tickets").resolve(ticketId.toString());
 
@@ -98,6 +96,8 @@ public class LocalFileStorageService implements FileStorageService {
         } catch (IOException e) {
             throw new FileMoveException("Failed to create ticket directory for ticket " + ticketId, e);
         }
+
+        Map<String, String> movedFileMap = new HashMap<>();
 
         for (String fileUrl : fileUrls) {
             try {
@@ -112,15 +112,19 @@ public class LocalFileStorageService implements FileStorageService {
                 }
 
                 Path destinationPath = ticketDir.resolve(sourcePath.getFileName());
-                
                 Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                 log.info("Moved {} → {}", sourcePath, destinationPath);
+
+                String newUrl = "/uploads/tickets/" + ticketId + "/" + destinationPath.getFileName();
+                movedFileMap.put(fileUrl, newUrl);
 
             } catch (Exception e) {
                 log.error("Failed to move file from URL: {}", fileUrl, e);
                 throw new FileMoveException("Failed to move file from URL: " + fileUrl, e);
             }
         }
+
+        return movedFileMap;
     }
 
     @Override
