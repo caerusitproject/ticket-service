@@ -20,6 +20,8 @@ public record TicketDto(
         String subCategory,
         TicketStatus status,
         TicketPriority priority,
+        String requester,
+        List<String> userEmailIdToNotify,
         String assigneeUserId,
         String createdBy,
         Instant startDate,

@@ -4,13 +4,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FileStorageService {
     String storeFile(MultipartFile file, String relativePath);
 
     Resource loadFile(String relativePath);
 
-    void moveTempFilesToTicketFolder(Long ticketId, List<String> fileUrls);
+    Map<String, String> moveTempFilesToTicketFolder(Long ticketId, List<String> fileUrls);
 
     void deleteFile(String relativePath);
 }

@@ -94,6 +94,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+        log.error("ApiException: {}", ex.getMessage());
         String correlationId = MDC.get(CORRELATION_ID);
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getStatus().getReasonPhrase(),
@@ -106,6 +107,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleEnumConversionError(MethodArgumentTypeMismatchException ex) {
+        log.error("MethodArgumentTypeMismatchException: {}", ex.getMessage());
         String paramName = ex.getName();
         String message = String.format(
                 "Invalid value for parameter '%s'. Allowed values are: %s",

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,11 +66,37 @@ public class TicketCommandServiceImpl implements TicketCommandService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        List<String> editorUrls = extractImageUrls(ticketDto.ticketDetail().content());
+        List<String> editorUrls = (ticketDto.ticketDetail() != null
+                && ticketDto.ticketDetail().content() != null
+                && !ticketDto.ticketDetail().content().isBlank())
+                ? extractImageUrls(ticketDto.ticketDetail().content())
+                : List.of();
 
-        List<String> allFileUrls = Stream.concat(documentUrls.stream(), editorUrls.stream()).toList();
+        List<String> allFileUrls = Stream.concat(documentUrls.stream(), editorUrls.stream()).filter(url -> url != null && !url.isBlank())
+                .toList();
 
-        fileStorageService.moveTempFilesToTicketFolder(savedTicket.getId(), allFileUrls);
+        if (!allFileUrls.isEmpty()) {
+            Map<String, String> movedFilesMap = fileStorageService.moveTempFilesToTicketFolder(savedTicket.getId(), allFileUrls);
+            // update document URLs
+            if (ticket.getDocuments() != null) {
+                ticket.getDocuments().forEach(doc -> {
+                    String newUrl = movedFilesMap.get(doc.getDocUrl());
+                    if (newUrl != null) {
+                        doc.setDocUrl(newUrl);
+                    }
+                });
+            }
+
+            if (ticket.getTicketDetail() != null) {
+                String updatedContent = ticket.getTicketDetail().getContent();
+                for (Map.Entry<String, String> entry : movedFilesMap.entrySet()) {
+                    updatedContent = updatedContent.replace(entry.getKey(), entry.getValue());
+                }
+                ticket.getTicketDetail().setContent(updatedContent);
+            }
+
+            ticketRepository.save(ticket);
+        }
 
         return savedTicket.getId();
     }
