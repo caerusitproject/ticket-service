@@ -3,10 +3,12 @@ package com.caerus.ticketservice.service;
 import com.caerus.ticketservice.domain.Ticket;
 import com.caerus.ticketservice.domain.TicketDetail;
 import com.caerus.ticketservice.dto.DocumentInfoRequestDto;
+import com.caerus.ticketservice.dto.TicketDetailRequestDto;
 import com.caerus.ticketservice.dto.TicketRequestDto;
 import com.caerus.ticketservice.dto.UpdateTicketRequestDto;
 import com.caerus.ticketservice.enums.ErrorCode;
 import com.caerus.ticketservice.exception.NotFoundException;
+import com.caerus.ticketservice.exception.file.FileMoveException;
 import com.caerus.ticketservice.file.FileStorageService;
 import com.caerus.ticketservice.mapper.TicketDetailMapper;
 import com.caerus.ticketservice.mapper.TicketMapper;
@@ -16,10 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -43,62 +42,90 @@ public class TicketCommandServiceImpl implements TicketCommandService {
     @Transactional
     public Long saveTicket(TicketRequestDto ticketDto) {
 
-        Ticket ticket = ticketMapper.toEntity(ticketDto);
+        Ticket ticket = buildTicketEntity(ticketDto);
+        Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
 
-        if (ticketDto.ticketDetail() != null && ticketDto.ticketDetail().content() != null) {
+        List<String> fileUrls = collectAllFileUrls(ticketDto);
+        if (fileUrls.isEmpty()) {
+            return savedTicket.getId();
+        }
+
+        Map<String, String> movedFilesMap = moveFilesAndGetUpdatedPaths(savedTicket.getId(), fileUrls);
+        updateTicketFileReferences(ticket, movedFilesMap);
+
+        ticketRepository.save(ticket);
+        return savedTicket.getId();
+    }
+
+    private Ticket buildTicketEntity(TicketRequestDto dto) {
+        Ticket ticket = ticketMapper.toEntity(dto);
+
+        if (dto.ticketDetail() != null && dto.ticketDetail().content() != null) {
             TicketDetail detail = TicketDetail.builder()
-                    .content(ticketDto.ticketDetail().content())
+                    .content(dto.ticketDetail().content())
                     .ticket(ticket)
                     .build();
             ticket.setTicketDetail(detail);
         }
 
-
         if (ticket.getDocuments() != null) {
             ticket.getDocuments().forEach(doc -> doc.setTicket(ticket));
         }
 
-        Ticket savedTicket = ticketRepository.saveAndFlush(ticket);
+        return ticket;
+    }
 
-        List<String> documentUrls = ticketDto.documents() == null ? List.of()
-                : ticketDto.documents().stream()
+    private List<String> collectAllFileUrls(TicketRequestDto dto) {
+        List<String> documentUrls = Optional.ofNullable(dto.documents())
+                .orElse(List.of())
+                .stream()
                 .map(DocumentInfoRequestDto::docUrl)
                 .filter(Objects::nonNull)
                 .toList();
 
-        List<String> editorUrls = (ticketDto.ticketDetail() != null
-                && ticketDto.ticketDetail().content() != null
-                && !ticketDto.ticketDetail().content().isBlank())
-                ? extractImageUrls(ticketDto.ticketDetail().content())
-                : List.of();
+        List<String> editorUrls = Optional.ofNullable(dto.ticketDetail())
+                .map(TicketDetailRequestDto::content)
+                .filter(content -> content != null && !content.isBlank())
+                .map(this::extractImageUrls)
+                .orElse(List.of());
 
-        List<String> allFileUrls = Stream.concat(documentUrls.stream(), editorUrls.stream()).filter(url -> url != null && !url.isBlank())
+        return Stream.concat(documentUrls.stream(), editorUrls.stream())
+                .filter(url -> url != null && !url.isBlank())
+                .distinct()
                 .toList();
+    }
 
-        if (!allFileUrls.isEmpty()) {
-            Map<String, String> movedFilesMap = fileStorageService.moveTempFilesToTicketFolder(savedTicket.getId(), allFileUrls);
-            // update document URLs
-            if (ticket.getDocuments() != null) {
-                ticket.getDocuments().forEach(doc -> {
-                    String newUrl = movedFilesMap.get(doc.getDocUrl());
-                    if (newUrl != null) {
-                        doc.setDocUrl(newUrl);
-                    }
-                });
-            }
+    private Map<String, String> moveFilesAndGetUpdatedPaths(Long ticketId, List<String> fileUrls) {
+        try {
+            return fileStorageService.moveTempFilesToTicketFolder(ticketId, fileUrls);
+        } catch (Exception e) {
+            log.error("Failed to move temp files for ticket {}: {}", ticketId, e.getMessage(), e);
+            throw new FileMoveException("File move failed for ticket " + ticketId, e);
+        }
+    }
 
-            if (ticket.getTicketDetail() != null) {
-                String updatedContent = ticket.getTicketDetail().getContent();
-                for (Map.Entry<String, String> entry : movedFilesMap.entrySet()) {
-                    updatedContent = updatedContent.replace(entry.getKey(), entry.getValue());
-                }
-                ticket.getTicketDetail().setContent(updatedContent);
-            }
-
-            ticketRepository.save(ticket);
+    private void updateTicketFileReferences(Ticket ticket, Map<String, String> movedFilesMap) {
+        if (ticket.getDocuments() != null) {
+            ticket.getDocuments().forEach(doc -> {
+                String newUrl = movedFilesMap.get(doc.getDocUrl());
+                if (newUrl != null) doc.setDocUrl(newUrl);
+            });
         }
 
-        return savedTicket.getId();
+        if (ticket.getTicketDetail() != null) {
+            String updatedContent = replaceImageUrls(ticket.getTicketDetail().getContent(), movedFilesMap);
+            ticket.getTicketDetail().setContent(updatedContent);
+        }
+    }
+
+    private String replaceImageUrls(String html, Map<String, String> movedFilesMap) {
+        if (html == null || html.isBlank() || movedFilesMap.isEmpty()) return html;
+
+        String updated = html;
+        for (Map.Entry<String, String> entry : movedFilesMap.entrySet()) {
+            updated = updated.replace(entry.getKey(), entry.getValue());
+        }
+        return updated;
     }
 
     private List<String> extractImageUrls(String html) {
