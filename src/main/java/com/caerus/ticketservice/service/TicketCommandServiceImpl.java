@@ -153,7 +153,6 @@ public class TicketCommandServiceImpl implements TicketCommandService {
                 ticket.getTicketDetail().setTicket(ticket);
             }
             ticketDetailMapper.patchTicketDetailFromDto(updateTicketRequestDto.ticketDetail(), ticket.getTicketDetail());
-            ;
         }
         Ticket updated = ticketRepository.save(ticket);
         return ticketMapper.toUpdateDto(updated);

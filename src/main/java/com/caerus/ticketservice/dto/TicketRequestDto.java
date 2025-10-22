@@ -25,11 +25,8 @@ public record TicketRequestDto(
         @NotBlank
         String subject,
         Long assetsId,
-        @NotBlank
-        String category,
-
-        @NotBlank
-        String subCategory,
+        Long categoryId,
+        Long subcategoryId,
 
         @NotNull
         TicketStatus status,
@@ -48,9 +45,6 @@ public record TicketRequestDto(
         Instant lastUpdated,
         boolean deleted,
         TicketDetailRequestDto ticketDetail,
-        List<DocumentInfoRequestDto> documents,
-        Instant createdAt,
-        Instant updatedAt
-
+        List<DocumentInfoRequestDto> documents
 ) {
 }

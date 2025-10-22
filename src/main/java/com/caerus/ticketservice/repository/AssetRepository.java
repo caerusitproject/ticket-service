@@ -1,9 +1,9 @@
 package com.caerus.ticketservice.repository;
 
-import com.caerus.ticketservice.domain.RequestMaster;
+import com.caerus.ticketservice.domain.Asset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RequestMasterRepository extends JpaRepository<RequestMaster, Long> {
+public interface AssetRepository extends JpaRepository<Asset, Long> {
 }

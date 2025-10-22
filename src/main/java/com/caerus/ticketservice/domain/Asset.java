@@ -1,14 +1,12 @@
 package com.caerus.ticketservice.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 
 @Entity
+@Table(name = "asset")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,11 +16,10 @@ public class Asset extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String assetTag;
     private String assetName;
     private String description;
-    private Long categoryId;
-    private Long subCategoryId;
     private Instant purchaseDate;
     private Instant warrantyExpireDate;
     private String location;
@@ -30,4 +27,8 @@ public class Asset extends AuditableEntity {
     private Double cost;
     private String vendorName;
     private String serialNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subcategory_id", nullable = false)
+    private Subcategory subcategory;
 }

@@ -21,7 +21,7 @@ public class TicketSpecification {
             }
 
             if (ticketSearchRequest.priority() != null) {
-                predicates.add(cb.equal(root.get("priority"), ticketSearchRequest.priority()));
+                predicates.add(cb.equal(root.get("description"), ticketSearchRequest.priority()));
             }
 
             if (ticketSearchRequest.dueDate() != null) {

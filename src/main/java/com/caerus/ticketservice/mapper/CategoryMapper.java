@@ -2,17 +2,16 @@ package com.caerus.ticketservice.mapper;
 
 import com.caerus.ticketservice.domain.Category;
 import com.caerus.ticketservice.dto.CategoryDto;
-import com.caerus.ticketservice.dto.CategoryRequestDto;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
     CategoryDto toDto(Category category);
 
+    @Mapping(target = "id", ignore = true)
+    Category toEntity(CategoryDto categoryDto);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void patchCategoryFromDto(CategoryRequestDto dto, @MappingTarget Category entity);
+    void patchCategoryFromDto(CategoryDto dto, @MappingTarget Category entity);
 }
