@@ -3,7 +3,6 @@ package com.caerus.ticketservice.controller;
 import com.caerus.ticketservice.dto.ApiResponse;
 import com.caerus.ticketservice.dto.AssetDto;
 import com.caerus.ticketservice.dto.PageResponse;
-import com.caerus.ticketservice.payload.SuccessResponse;
 import com.caerus.ticketservice.service.AssetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,11 @@ public class AssetController {
     private final AssetService assetService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<Map<String, Long>>> createAsset(@Valid @RequestBody AssetDto assetDto) {
+    public ResponseEntity<ApiResponse<Map<String, Long>>> createAsset(@Valid @RequestBody AssetDto assetDto) {
         Long id = assetService.createAsset(assetDto);
         Map<String, Long> data = Map.of("id", id);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse<>("Asset created successfully", data));
+                .body(ApiResponse.success("Asset created successfully", data));
     }
 
     @GetMapping

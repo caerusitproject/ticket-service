@@ -3,7 +3,6 @@ package com.caerus.ticketservice.controller;
 import com.caerus.ticketservice.dto.ApiResponse;
 import com.caerus.ticketservice.dto.PageResponse;
 import com.caerus.ticketservice.dto.SubcategoryDto;
-import com.caerus.ticketservice.payload.SuccessResponse;
 import com.caerus.ticketservice.service.SubcategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class SubcategoryController {
     private final SubcategoryService subcategoryService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<Map<String, Long>>> createSubcategory(@PathVariable Long categoryId, @Valid @RequestBody SubcategoryDto subcategoryDto) {
+    public ResponseEntity<ApiResponse<Map<String, Long>>> createSubcategory(@PathVariable Long categoryId, @Valid @RequestBody SubcategoryDto subcategoryDto) {
         SubcategoryDto dtoWithCategory = subcategoryDto.toBuilder()
                 .categoryId(categoryId)
                 .build();
@@ -32,7 +31,7 @@ public class SubcategoryController {
         Long id = subcategoryService.createSubcategory(dtoWithCategory);
         Map<String, Long> data = Map.of("id", id);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse<>("Subcategory created successfully", data));
+                .body(ApiResponse.success("Subcategory created successfully", data));
     }
 
     @GetMapping

@@ -3,7 +3,6 @@ package com.caerus.ticketservice.controller;
 import com.caerus.ticketservice.dto.ApiResponse;
 import com.caerus.ticketservice.dto.CategoryDto;
 import com.caerus.ticketservice.dto.PageResponse;
-import com.caerus.ticketservice.payload.SuccessResponse;
 import com.caerus.ticketservice.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +23,25 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<Map<String, Long>>> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<ApiResponse<Map<String, Long>>> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         Long id = categoryService.createCategory(categoryDto);
         Map<String, Long> data = Map.of("id", id);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new SuccessResponse<>("Category created successfully", data));
+                .body(ApiResponse.success("Category created successfully", data));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<SuccessResponse<CategoryDto>> patchCategory(@PathVariable Long id, @RequestBody CategoryDto categoryRequestDto) {
+    public ResponseEntity<ApiResponse<CategoryDto>> patchCategory(@PathVariable Long id, @RequestBody CategoryDto categoryRequestDto) {
         CategoryDto updatedCategory = categoryService.patchCategoryById(id, categoryRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse<>("Category updated successfully", updatedCategory));
+                .body(ApiResponse.success("Category updated successfully", updatedCategory));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse<CategoryDto>> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Long id) {
         CategoryDto categoryDto = categoryService.getCategoryById(id);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse<>("Category retrieved successfully", categoryDto));
+                .body(ApiResponse.success("Category retrieved successfully", categoryDto));
     }
 
     @GetMapping

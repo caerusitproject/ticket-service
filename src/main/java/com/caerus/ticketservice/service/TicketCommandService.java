@@ -10,6 +10,6 @@ public interface TicketCommandService {
 
     UpdateTicketRequestDto patchTicketById(Long id, UpdateTicketRequestDto updateTicketRequestDto);
 
-    void softDeleteById(Long id);
+    void deleteById(Long id);
 
 }

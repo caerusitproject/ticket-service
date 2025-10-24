@@ -170,11 +170,10 @@ public class TicketCommandServiceImpl implements TicketCommandService {
 
     @Override
     @Transactional
-    public void softDeleteById(Long id) {
+    public void deleteById(Long id) {
         Ticket ticket = getTicketOrThrow(id);
 
-        ticket.setDeleted(true);
-        ticketRepository.save(ticket);
+        ticketRepository.deleteById(id);
     }
 
 }

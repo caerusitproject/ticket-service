@@ -45,8 +45,8 @@ public class TicketCommandController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> softDeleteById(@PathVariable Long id) {
-        ticketCommandService.softDeleteById(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        ticketCommandService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
