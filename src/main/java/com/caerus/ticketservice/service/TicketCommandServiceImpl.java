@@ -153,7 +153,6 @@ public class TicketCommandServiceImpl implements TicketCommandService {
                 ticket.getTicketDetail().setTicket(ticket);
             }
             ticketDetailMapper.patchTicketDetailFromDto(updateTicketRequestDto.ticketDetail(), ticket.getTicketDetail());
-            ;
         }
         Ticket updated = ticketRepository.save(ticket);
         return ticketMapper.toUpdateDto(updated);
@@ -171,11 +170,10 @@ public class TicketCommandServiceImpl implements TicketCommandService {
 
     @Override
     @Transactional
-    public void softDeleteById(Long id) {
+    public void deleteById(Long id) {
         Ticket ticket = getTicketOrThrow(id);
 
-        ticket.setDeleted(true);
-        ticketRepository.save(ticket);
+        ticketRepository.deleteById(id);
     }
 
 }

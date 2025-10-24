@@ -28,9 +28,6 @@ public class Ticket extends AuditableEntity {
     @Column(nullable = false)
     private TicketPriority priority = TicketPriority.LOW;
 
-    private String category;
-    private String subCategory;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status = TicketStatus.CREATED;
@@ -43,10 +40,11 @@ public class Ticket extends AuditableEntity {
     private String technician;
     private String subject;
     private String requester;
-    List<String> userEmailIdToNotify;
 
-    @Column(name = "assets_id")
-    private Long assetsId;
+    @ElementCollection
+    @CollectionTable(name = "ticket_user_emails", joinColumns = @JoinColumn(name = "ticket_id"))
+    @Column(name = "user_email")
+    List<String> userEmailIdToNotify;
 
     private String assigneeUserId;
 
@@ -54,6 +52,8 @@ public class Ticket extends AuditableEntity {
 
     @Column(name = "start_date")
     private Instant startDate;
+
+    private Instant endDate;
 
     @Column(name = "due_date")
     private Instant dueDate;
@@ -70,6 +70,17 @@ public class Ticket extends AuditableEntity {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DocumentInfo> documents;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subcategory_id")
+    private Subcategory subcategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asset_id")
+    private Asset asset;
 
     @PrePersist
     protected void onCreateTicket() {

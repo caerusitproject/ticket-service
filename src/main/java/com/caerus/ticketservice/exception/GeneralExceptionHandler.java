@@ -85,7 +85,6 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         String correlationId = MDC.get(CORRELATION_ID);
         ErrorResponse errorResponse = new ErrorResponse(
                 status.getReasonPhrase(),
-                ex.getMessage(),
                 correlationId,
                 status.value()
         );
@@ -98,7 +97,6 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         String correlationId = MDC.get(CORRELATION_ID);
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getStatus().getReasonPhrase(),
-                ex.getMessage(),
                 correlationId,
                 ex.getStatus().value()
         );
@@ -117,7 +115,6 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                message,
                 MDC.get(CORRELATION_ID),
                 HttpStatus.BAD_REQUEST.value()
         );

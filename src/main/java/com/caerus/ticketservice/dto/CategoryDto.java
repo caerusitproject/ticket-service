@@ -1,11 +1,14 @@
 package com.caerus.ticketservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CategoryDto
         (Long id,
+         String categoryCode,
+
+         @NotBlank(message = "Category name is required")
          String categoryName,
-         String subCategory,
-         String priority,
-         String mode,
-         Long groupId,
-         String technician) {
+
+         String description
+        ) {
 }
