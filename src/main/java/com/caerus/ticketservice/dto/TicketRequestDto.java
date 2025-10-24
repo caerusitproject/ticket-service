@@ -41,6 +41,7 @@ public record TicketRequestDto(
         List<String> userEmailIdToNotify,
         String createdBy,
         Instant startDate,
+        Instant endDate,
         Instant dueDate,
         Instant lastUpdated,
         boolean deleted,

@@ -16,6 +16,7 @@ public record AssetDto(
         Double cost,
         String vendorName,
         @NotBlank(message = "Serial number is required")
-        String serialNumber
+        String serialNumber,
+        Long subcategoryId
 ) {
 }

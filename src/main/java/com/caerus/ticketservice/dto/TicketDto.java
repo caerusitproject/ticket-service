@@ -25,6 +25,7 @@ public record TicketDto(
         String assigneeUserId,
         String createdBy,
         Instant startDate,
+        Instant endDate,
         Instant dueDate,
         Instant lastUpdated,
         boolean deleted,

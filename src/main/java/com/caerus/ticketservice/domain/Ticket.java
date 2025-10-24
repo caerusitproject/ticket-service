@@ -53,6 +53,8 @@ public class Ticket extends AuditableEntity {
     @Column(name = "start_date")
     private Instant startDate;
 
+    private Instant endDate;
+
     @Column(name = "due_date")
     private Instant dueDate;
 

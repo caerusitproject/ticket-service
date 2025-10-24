@@ -23,7 +23,12 @@ public class TicketSpecification {
             if (ticketSearchRequest.priority() != null) {
                 predicates.add(cb.equal(root.get("description"), ticketSearchRequest.priority()));
             }
-
+            if (ticketSearchRequest.startDate() != null) {
+                predicates.add(cb.equal(root.get("startDate"), ticketSearchRequest.startDate()));
+            }
+            if (ticketSearchRequest.endDate() != null) {
+                predicates.add(cb.equal(root.get("endDate"), ticketSearchRequest.endDate()));
+            }
             if (ticketSearchRequest.dueDate() != null) {
                 predicates.add(cb.equal(root.get("dueDate"), ticketSearchRequest.dueDate()));
             }

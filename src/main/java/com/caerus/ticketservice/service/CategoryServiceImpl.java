@@ -29,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Long createCategory(CategoryDto categoryDto) {
-        categoryMapper.toEntity(categoryDto);
         Category savedCategory = categoryRepository.save(categoryMapper.toEntity(categoryDto));
         return savedCategory.getId();
     }
