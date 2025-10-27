@@ -23,5 +23,5 @@ public class Category extends AuditableEntity {
     private String description;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Subcategory> subcategories = new ArrayList<>();
+    private final List<Subcategory> subcategories = new ArrayList<>();
 }

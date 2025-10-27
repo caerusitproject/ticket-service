@@ -27,7 +27,7 @@ public interface TicketMapper {
 
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "ticketDetail", ignore = true)
-    @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "documents", source = "documents")
     @Mapping(target = "category", source = "categoryId", qualifiedByName = "mapCategoryFromId")
     @Mapping(target = "subcategory", source = "subcategoryId", qualifiedByName = "mapSubcategoryFromId")
     @Mapping(target = "asset", source = "assetsId", qualifiedByName = "mapAssetFromId")

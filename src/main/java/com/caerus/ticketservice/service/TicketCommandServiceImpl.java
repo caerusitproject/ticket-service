@@ -1,5 +1,6 @@
 package com.caerus.ticketservice.service;
 
+import com.caerus.ticketservice.domain.DocumentInfo;
 import com.caerus.ticketservice.domain.Ticket;
 import com.caerus.ticketservice.domain.TicketDetail;
 import com.caerus.ticketservice.dto.DocumentInfoRequestDto;
@@ -32,6 +33,7 @@ public class TicketCommandServiceImpl implements TicketCommandService {
     private final FileStorageService fileStorageService;
     private final TicketMapper ticketMapper;
     private final TicketDetailMapper ticketDetailMapper;
+    private final DocumentInfoService documentInfoService;
 
     private Ticket getTicketOrThrow(Long id) {
         return ticketRepository.findById(id)
@@ -52,6 +54,18 @@ public class TicketCommandServiceImpl implements TicketCommandService {
 
         Map<String, String> movedFilesMap = moveFilesAndGetUpdatedPaths(savedTicket.getId(), fileUrls);
         updateTicketFileReferences(ticket, movedFilesMap);
+        if (ticketDto.documents() != null && !ticketDto.documents().isEmpty()) {
+            List<DocumentInfo> newDocs = ticketDto.documents().stream()
+                    .map(d -> DocumentInfo.builder()
+                            .docType(d.docType())
+                            .docSize(d.docSize())
+                            .docUrl(d.docUrl())
+                            .ticket(ticket)
+                            .build())
+                    .toList();
+
+            documentInfoService.replaceDocumentsForTicket(ticket, newDocs);
+        }
 
         ticketRepository.save(ticket);
         return savedTicket.getId();
