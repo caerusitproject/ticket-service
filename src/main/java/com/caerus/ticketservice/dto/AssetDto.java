@@ -17,6 +17,10 @@ public record AssetDto(
         String vendorName,
         @NotBlank(message = "Serial number is required")
         String serialNumber,
-        Long subcategoryId
+
+        @NotBlank(message = "Subcategory ID is required")
+        Long subcategoryId,
+
+        Boolean deleted
 ) {
 }

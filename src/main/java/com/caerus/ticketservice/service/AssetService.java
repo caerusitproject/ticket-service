@@ -7,9 +7,11 @@ import org.springframework.data.domain.Pageable;
 public interface AssetService {
     Long createAsset(AssetDto assetDto);
 
-    PageResponse<AssetDto> getAllAssets(String search, Pageable pageable);
+    PageResponse<AssetDto> getAllAssets(Boolean deleted, String search, Pageable pageable);
 
     AssetDto patchAssetById(Long id, AssetDto AssetDto);
 
     AssetDto getAssetById(Long id);
+
+    void deleteAssetById(Long id);
 }

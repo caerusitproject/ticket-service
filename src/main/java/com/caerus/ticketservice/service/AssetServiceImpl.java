@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,8 +31,15 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public PageResponse<AssetDto> getAllAssets(String search, Pageable pageable) {
-        Page<Asset> page = assetRepository.findAll(assetSpecification.search(search), pageable);
+    public PageResponse<AssetDto> getAllAssets(Boolean deleted, String search, Pageable pageable) {
+        boolean isDeleted = Boolean.TRUE.equals(deleted);
+
+        Specification<Asset> spec = Specification.allOf(
+                assetSpecification.deletedEquals(isDeleted),
+                assetSpecification.search(search)
+        );
+
+        Page<Asset> page = assetRepository.findAll(spec, pageable);
 
         Page<AssetDto> dtoPage = page.map(assetMapper::toDto);
         return PageResponse.from(dtoPage);
@@ -48,6 +56,14 @@ public class AssetServiceImpl implements AssetService {
     public AssetDto getAssetById(Long id) {
         Asset asset = getAssetByIdOrThrowError(id);
         return assetMapper.toDto(asset);
+    }
+
+    @Override
+    public void deleteAssetById(Long id) {
+        Asset asset = getAssetByIdOrThrowError(id);
+        asset.setDeleted(true);
+        assetRepository.save(asset);
+        log.info("Asset with id {} marked deleted successfully", id);
     }
 
     private Asset getAssetByIdOrThrowError(Long id) {

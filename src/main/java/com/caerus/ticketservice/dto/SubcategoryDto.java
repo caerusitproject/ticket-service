@@ -15,4 +15,5 @@ public class SubcategoryDto {
     String name;
     String description;
     Long categoryId;
+    Boolean deleted;
 }

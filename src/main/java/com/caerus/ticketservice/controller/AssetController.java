@@ -32,11 +32,12 @@ public class AssetController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<AssetDto>>> getAllAssets(
+            @RequestParam(defaultValue = "false") Boolean deleted,
             @RequestParam(required = false) String search,
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.success(
-                "Assets retrieved successfully", assetService.getAllAssets(search, pageable)));
+                "Assets retrieved successfully", assetService.getAllAssets(deleted, search, pageable)));
     }
 
     @PatchMapping("/{id}")
@@ -49,5 +50,11 @@ public class AssetController {
     public ResponseEntity<ApiResponse<AssetDto>> getAssetById(@PathVariable Long id) {
         AssetDto AssetDto = assetService.getAssetById(id);
         return ResponseEntity.ok(ApiResponse.success("Asset retrieved successfully", AssetDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteAsset(@PathVariable Long id) {
+        assetService.deleteAssetById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -28,6 +28,9 @@ public class Asset extends AuditableEntity {
     private String vendorName;
     private String serialNumber;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subcategory_id", nullable = false)
     private Subcategory subcategory;

@@ -21,4 +21,8 @@ public class SubcategorySpecification {
                 cb.like(cb.lower(root.get("code")), like)
         );
     }
+
+    public Specification<Subcategory> deletedEquals(Boolean deleted) {
+        return (root, query, cb) -> cb.equal(root.get("deleted"), deleted);
+    }
 }
