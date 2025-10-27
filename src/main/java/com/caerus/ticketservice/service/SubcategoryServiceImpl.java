@@ -36,12 +36,18 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     }
 
     @Override
-    public PageResponse<SubcategoryDto> getAllSubcategories(Long categoryId, String search, Pageable pageable) {
+    public PageResponse<SubcategoryDto> getAllSubcategories(Boolean deleted, Long categoryId, String search, Pageable pageable) {
         pageable = enforceAllowedSort(pageable, List.of("id", "name"));
 
-        Specification<Subcategory> specFinal = subcategorySpecification.byCategory(categoryId)
-                .and(subcategorySpecification.search(search));
-        Page<Subcategory> page = subcategoryRepository.findAll(specFinal, pageable);
+        boolean isDeleted = Boolean.TRUE.equals(deleted);
+
+        Specification<Subcategory> spec = Specification.allOf(
+                subcategorySpecification.byCategory(categoryId),
+                subcategorySpecification.deletedEquals(isDeleted),
+                subcategorySpecification.search(search)
+        );
+
+        Page<Subcategory> page = subcategoryRepository.findAll(spec, pageable);
 
         Page<SubcategoryDto> dtoPage = page.map(subcategoryMapper::toDto);
         return PageResponse.from(dtoPage);
@@ -59,6 +65,14 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     public SubcategoryDto getSubcategoryById(Long categoryId, Long id) {
         Subcategory category = getSubcategoryByIdOrThrowError(id);
         return subcategoryMapper.toDto(category);
+    }
+
+    @Override
+    public void deleteSubcategoryById(Long categoryId, Long id) {
+        Subcategory subcategory = getSubcategoryByIdOrThrowError(id);
+        subcategory.setDeleted(true);
+        subcategoryRepository.save(subcategory);
+        log.info("Subcategory with ID {} marked deleted successfully", id);
     }
 
     private Subcategory getSubcategoryByIdOrThrowError(Long id) {

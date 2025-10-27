@@ -46,10 +46,17 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<CategoryDto>>> getAllCategories(
+            @RequestParam(defaultValue = "false") Boolean deleted,
             @RequestParam(required = false) String search,
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.success(
-                "Subcategories retrieved successfully", categoryService.getAllCategories(search, pageable)));
+                "Categories retrieved successfully", categoryService.getAllCategories(deleted, search, pageable)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategoryById(id);
+        return ResponseEntity.noContent().build();
     }
 }

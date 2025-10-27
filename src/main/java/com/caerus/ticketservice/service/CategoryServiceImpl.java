@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,13 +54,28 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PageResponse<CategoryDto> getAllCategories(String search, Pageable pageable) {
+    public PageResponse<CategoryDto> getAllCategories(Boolean deleted, String search, Pageable pageable) {
         pageable = enforceAllowedSort(pageable, List.of("id", "categoryName"));
 
-        Page<Category> page = categoryRepository.findAll(categorySpecification.search(search), pageable);
+        boolean isDeleted = Boolean.TRUE.equals(deleted);
+
+        Specification<Category> spec = Specification.allOf(
+                categorySpecification.deletedEquals(isDeleted),
+                categorySpecification.search(search)
+        );
+
+        Page<Category> page = categoryRepository.findAll(spec, pageable);
 
         Page<CategoryDto> dtoPage = page.map(categoryMapper::toDto);
         return PageResponse.from(dtoPage);
+    }
+
+    @Override
+    public void deleteCategoryById(Long id) {
+        Category category = getCategoryByIdOrThrowError(id);
+        category.setDeleted(true);
+        categoryRepository.save(category);
+        log.info("Category with id {} marked deleted successfully", id);
     }
 
     private Pageable enforceAllowedSort(Pageable pageable, List<String> allowedSorts) {

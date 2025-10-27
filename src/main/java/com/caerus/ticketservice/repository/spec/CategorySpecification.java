@@ -16,4 +16,8 @@ public class CategorySpecification {
                 cb.like(cb.lower(root.get("categoryCode")), like)
         );
     }
+
+    public Specification<Category> deletedEquals(Boolean deleted) {
+        return (root, query, cb) -> cb.equal(root.get("deleted"), deleted);
+    }
 }

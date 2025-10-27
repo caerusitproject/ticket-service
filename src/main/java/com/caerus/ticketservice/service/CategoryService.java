@@ -12,5 +12,7 @@ public interface CategoryService {
 
     CategoryDto getCategoryById(Long id);
 
-    PageResponse<CategoryDto> getAllCategories(String search, Pageable pageable);
+    PageResponse<CategoryDto> getAllCategories(Boolean deleted, String search, Pageable pageable);
+
+    void deleteCategoryById(Long id);
 }

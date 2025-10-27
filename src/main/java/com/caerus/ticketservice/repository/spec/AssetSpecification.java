@@ -17,4 +17,8 @@ public class AssetSpecification {
                 cb.like(cb.lower(root.get("assetName")), like)
         );
     }
+
+    public Specification<Asset> deletedEquals(Boolean deleted) {
+        return (root, query, cb) -> cb.equal(root.get("deleted"), deleted);
+    }
 }

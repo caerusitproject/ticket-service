@@ -9,6 +9,7 @@ public record CategoryDto
          @NotBlank(message = "Category name is required")
          String categoryName,
 
-         String description
+         String description,
+         Boolean deleted
         ) {
 }

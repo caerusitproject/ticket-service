@@ -22,6 +22,9 @@ public class Category extends AuditableEntity {
     private String categoryName;
     private String description;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<Subcategory> subcategories = new ArrayList<>();
 }
