@@ -48,21 +48,33 @@ public class FileController {
             @PathVariable Long ticketId,
             @PathVariable String fileName) throws IOException {
 
-        String relativePath = "tickets/" + ticketId + "/documents/" + fileName;
+        if (fileName.contains("..")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String relativePath = "tickets/" + ticketId + "/" + fileName;
         Resource file = fileStorageService.loadFile(relativePath);
 
-        if (!file.exists() || !file.isReadable()) {
+        if (file == null || !file.exists() || !file.isReadable()) {
             return ResponseEntity.notFound().build();
         }
 
-        String contentType = Files.probeContentType(file.getFile().toPath());
-        if (contentType == null) {
-            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        String contentType;
+        try {
+            contentType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            log.warn("Could not determine content type of {}", relativePath, e);
+            contentType = null;
         }
+
+        contentType = (contentType != null) ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
+        boolean inline = contentType.startsWith("image") || contentType.equals("application/pdf");
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        (inline ? "inline" : "attachment") + "; filename=\"" + fileName + "\"")
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic())
                 .body(file);
     }

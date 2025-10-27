@@ -66,10 +66,6 @@ public class LocalFileStorageService implements FileStorageService {
         return UUID.randomUUID() + extension;
     }
 
-    public Path getRootLocation() {
-        return rootLocation;
-    }
-
     @Override
     public Resource loadFile(String relativePath) {
         try {
