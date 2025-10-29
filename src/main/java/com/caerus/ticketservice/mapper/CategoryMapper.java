@@ -10,6 +10,7 @@ public interface CategoryMapper {
     CategoryDto toDto(Category category);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", defaultValue = "false")
     Category toEntity(CategoryDto categoryDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

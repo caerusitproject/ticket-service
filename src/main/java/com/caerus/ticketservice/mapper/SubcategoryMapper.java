@@ -11,6 +11,7 @@ public interface SubcategoryMapper {
     SubcategoryDto toDto(Subcategory subcategory);
 
     @Mapping(target = "category", source = "categoryId", qualifiedByName = "mapCategory")
+    @Mapping(target = "deleted", defaultValue = "false")
     Subcategory toEntity(SubcategoryDto dto);
 
     @Named("mapCategory")
