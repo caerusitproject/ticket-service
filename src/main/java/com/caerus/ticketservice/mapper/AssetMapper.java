@@ -11,6 +11,7 @@ public interface AssetMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "subcategory", source = "subcategoryId", qualifiedByName = "mapSubcategory")
+    @Mapping(target = "deleted", defaultValue = "false")
     Asset toEntity(AssetDto dto);
 
     @Named("mapSubcategory")

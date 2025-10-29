@@ -1,6 +1,7 @@
 package com.caerus.ticketservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 
@@ -18,7 +19,7 @@ public record AssetDto(
         @NotBlank(message = "Serial number is required")
         String serialNumber,
 
-        @NotBlank(message = "Subcategory ID is required")
+        @NotNull(message = "Subcategory ID is required")
         Long subcategoryId,
 
         Boolean deleted
