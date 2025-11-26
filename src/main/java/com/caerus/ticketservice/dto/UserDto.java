@@ -1,40 +1,24 @@
 package com.caerus.ticketservice.dto;
 
 import jakarta.validation.constraints.*;
-
 import java.util.Set;
 
 public record UserDto(
-
-        Long id,
-
-        @NotBlank(message = "First name should not be empty")
+    Long id,
+    @NotBlank(message = "First name should not be empty")
         @Size(min = 2, max = 50, message = "First name should be between 2 and 50 characters")
         String firstName,
-
-        @NotEmpty(message = "Last name should not be empty")
-        String lastName,
-
-        @NotEmpty(message = "Email should not be empty")
-        @Email
-        String email,
-
-
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
-                message = "Password must be at least 8 characters and contain at least one capital letter and one number")
+    @NotEmpty(message = "Last name should not be empty") String lastName,
+    @NotEmpty(message = "Email should not be empty") @Email String email,
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
+            message =
+                "Password must be at least 8 characters and contain at least one capital letter and one number")
         @NotNull(message = "Password is required")
         String password,
-
-
-        @NotEmpty(message = "Phone number should not be empty")
+    @NotEmpty(message = "Phone number should not be empty")
         @Pattern(regexp = "\\d{10}", message = "Phone number should have exactly 10 numbers")
         String phone,
-
-        String username,
-
-
-        Boolean isActive,
-
-        Set<String> role
-) {
-}
+    String username,
+    Boolean isActive,
+    Set<String> role) {}

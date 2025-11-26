@@ -10,9 +10,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring")
 public interface TicketDetailMapper {
 
-    TicketDetailDto toDto(TicketDetail ticketDetail);
+  TicketDetailDto toDto(TicketDetail ticketDetail);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void patchTicketDetailFromDto(TicketDetailDto dto, @MappingTarget TicketDetail entity);
-
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  void patchTicketDetailFromDto(TicketDetailDto dto, @MappingTarget TicketDetail entity);
 }

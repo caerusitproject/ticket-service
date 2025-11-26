@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DocumentInfoController {
 
-    private final DocumentInfoService documentInfoService;
+  private final DocumentInfoService documentInfoService;
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<DocumentInfoDto>> patchDocument(@PathVariable Long id, @RequestBody DocumentInfoRequestDto documentRequestDto) {
-        DocumentInfoDto updatedDocument = documentInfoService.patchDocumentById(id, documentRequestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("Document updated successfully", updatedDocument));
-    }
+  @PatchMapping("/{id}")
+  public ResponseEntity<ApiResponse<DocumentInfoDto>> patchDocument(
+      @PathVariable Long id, @RequestBody DocumentInfoRequestDto documentRequestDto) {
+    DocumentInfoDto updatedDocument = documentInfoService.patchDocumentById(id, documentRequestDto);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(ApiResponse.success("Document updated successfully", updatedDocument));
+  }
 }

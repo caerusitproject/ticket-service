@@ -8,12 +8,11 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface DocumentInfoMapper {
 
-    @Mapping(target = "id", ignore = true)
-    DocumentInfo toEntity(DocumentInfoDto documentDto);
+  @Mapping(target = "id", ignore = true)
+  DocumentInfo toEntity(DocumentInfoDto documentDto);
 
-    DocumentInfoDto toDto(DocumentInfo documentInfo);
+  DocumentInfoDto toDto(DocumentInfo documentInfo);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void patchDocumentInfoFromDto(DocumentInfoRequestDto dto, @MappingTarget DocumentInfo entity);
-
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  void patchDocumentInfoFromDto(DocumentInfoRequestDto dto, @MappingTarget DocumentInfo entity);
 }

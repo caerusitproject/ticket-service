@@ -11,14 +11,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TicketDetail extends AuditableEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "ticket_id", nullable = false)
-    private Ticket ticket;
+  @OneToOne
+  @JoinColumn(name = "ticket_id", nullable = false)
+  private Ticket ticket;
 
-    @Column(columnDefinition = "text")
-    private String content;
+  @Column(columnDefinition = "text")
+  private String content;
 }

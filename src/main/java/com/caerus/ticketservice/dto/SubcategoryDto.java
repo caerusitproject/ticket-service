@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class SubcategoryDto {
-    Long id;
-    String code;
-    String name;
-    String description;
-    Long categoryId;
-    Boolean deleted;
+  Long id;
+  String code;
+  String name;
+  String description;
+  Long categoryId;
+  Boolean deleted;
 }

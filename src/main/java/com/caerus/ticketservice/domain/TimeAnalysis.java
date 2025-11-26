@@ -1,10 +1,9 @@
 package com.caerus.ticketservice.domain;
 
-
-import java.time.Instant;
-
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.*;
+
 @Entity
 @Table(name = "time_analysis")
 @Getter
@@ -13,12 +12,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TimeAnalysis {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private Long requestId;
-    private Instant resolution;
-    private Instant groupTime;
-    private Instant techTime;
+  private Long requestId;
+  private Instant resolution;
+  private Instant groupTime;
+  private Instant techTime;
 }

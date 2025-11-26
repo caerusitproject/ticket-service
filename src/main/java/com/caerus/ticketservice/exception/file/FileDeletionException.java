@@ -4,7 +4,7 @@ import com.caerus.ticketservice.exception.ApiException;
 import org.springframework.http.HttpStatus;
 
 public class FileDeletionException extends ApiException {
-    public FileDeletionException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  public FileDeletionException(String message, Throwable cause) {
+    super(message, cause, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }
