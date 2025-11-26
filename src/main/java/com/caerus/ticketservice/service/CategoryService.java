@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
 
-    Long createCategory(CategoryDto categoryDto);
+  Long createCategory(CategoryDto categoryDto);
 
-    CategoryDto patchCategoryById(Long id, CategoryDto categoryRequestDto);
+  CategoryDto patchCategoryById(Long id, CategoryDto categoryRequestDto);
 
-    CategoryDto getCategoryById(Long id);
+  CategoryDto getCategoryById(Long id);
 
-    PageResponse<CategoryDto> getAllCategories(Boolean deleted, String search, Pageable pageable);
+  PageResponse<CategoryDto> getAllCategories(Boolean deleted, String search, Pageable pageable);
 
-    void deleteCategoryById(Long id);
+  void deleteCategoryById(Long id);
 }

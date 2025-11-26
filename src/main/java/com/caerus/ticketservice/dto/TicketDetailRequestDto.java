@@ -1,6 +1,3 @@
 package com.caerus.ticketservice.dto;
 
-public record TicketDetailRequestDto(
-        String content
-) {
-}
+public record TicketDetailRequestDto(String content) {}

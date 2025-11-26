@@ -4,7 +4,7 @@ import com.caerus.ticketservice.exception.ApiException;
 import org.springframework.http.HttpStatus;
 
 public class EmptyFileUploadException extends ApiException {
-    public EmptyFileUploadException(String message) {
-        super(message, HttpStatus.BAD_REQUEST);
-    }
+  public EmptyFileUploadException(String message) {
+    super(message, HttpStatus.BAD_REQUEST);
+  }
 }

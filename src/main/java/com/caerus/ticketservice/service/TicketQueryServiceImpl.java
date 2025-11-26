@@ -21,29 +21,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class TicketQueryServiceImpl implements TicketQueryService {
 
-    private final TicketMapper ticketMapper;
-    private final TicketRepository ticketRepository;
+  private final TicketMapper ticketMapper;
+  private final TicketRepository ticketRepository;
 
-    private Ticket getTicketOrThrow(Long id) {
-        return ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.TICKET_NOT_FOUND.getMessage(id)));
-    }
+  private Ticket getTicketOrThrow(Long id) {
+    return ticketRepository
+        .findById(id)
+        .orElseThrow(() -> new NotFoundException(ErrorCode.TICKET_NOT_FOUND.getMessage(id)));
+  }
 
+  @Override
+  @Transactional(readOnly = true)
+  public TicketDto findTicketById(Long id) {
+    Ticket ticket = getTicketOrThrow(id);
 
-    @Override
-    @Transactional(readOnly = true)
-    public TicketDto findTicketById(Long id) {
-        Ticket ticket = getTicketOrThrow(id);
+    return ticketMapper.toDto(ticket);
+  }
 
-        return ticketMapper.toDto(ticket);
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public Page<TicketDto> getAllTickets(TicketSearchRequest ticketSearchRequest, Pageable pageable) {
+    Specification<Ticket> spec = TicketSpecification.withFilters(ticketSearchRequest);
+    Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<TicketDto> getAllTickets(TicketSearchRequest ticketSearchRequest, Pageable pageable) {
-        Specification<Ticket> spec = TicketSpecification.withFilters(ticketSearchRequest);
-        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
-
-        return tickets.map(ticketMapper::toDto);
-    }
+    return tickets.map(ticketMapper::toDto);
+  }
 }

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class FileStorageProperties {
-    private String uploadDir;
-    private String allowedTypes;
-    private String publicUrlPrefix;
+  private String uploadDir;
+  private String allowedTypes;
+  private String publicUrlPrefix;
 }

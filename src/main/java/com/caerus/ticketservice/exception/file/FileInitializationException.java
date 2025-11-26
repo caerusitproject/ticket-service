@@ -4,7 +4,7 @@ import com.caerus.ticketservice.exception.ApiException;
 import org.springframework.http.HttpStatus;
 
 public class FileInitializationException extends ApiException {
-    public FileInitializationException(String message, Throwable cause) {
-        super(message, cause, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  public FileInitializationException(String message, Throwable cause) {
+    super(message, cause, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }

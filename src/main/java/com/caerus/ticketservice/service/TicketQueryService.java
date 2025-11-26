@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface TicketQueryService {
 
-    TicketDto findTicketById(Long id);
+  TicketDto findTicketById(Long id);
 
-    Page<TicketDto> getAllTickets(TicketSearchRequest ticketSearchRequest, Pageable pageable);
+  Page<TicketDto> getAllTickets(TicketSearchRequest ticketSearchRequest, Pageable pageable);
 }
