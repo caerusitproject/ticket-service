@@ -3,11 +3,13 @@ package com.caerus.ticketservice.service;
 import com.caerus.ticketservice.domain.Ticket;
 import com.caerus.ticketservice.domain.TicketHistory;
 import com.caerus.ticketservice.dto.TicketHistoryDto;
+import com.caerus.ticketservice.enums.TicketStatus;
 import com.caerus.ticketservice.exception.BadRequestException;
 import com.caerus.ticketservice.repository.TicketHistoryRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
@@ -17,6 +19,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TicketHistoryService {
 
     private final TicketHistoryRepository historyRepository;
@@ -91,5 +94,19 @@ public class TicketHistoryService {
         return historyRepository.findByTicketIdOrderByCreatedAtDesc(ticketId).stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    public void recordCreateEvent(Ticket ticket, String performedBy) {
+        log.info("Recording history for ticketId={}, performedBy={}",
+                ticket.getId(), performedBy);
+        TicketHistory history =
+                TicketHistory.builder()
+                        .ticket(ticket)
+                        .eventType(TicketStatus.CREATED.name())
+                        .performedBy(performedBy)
+                        .description("Ticket created")
+                        .build();
+
+        historyRepository.saveAndFlush(history);
     }
 }
